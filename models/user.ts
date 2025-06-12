@@ -72,7 +72,7 @@ export const UserModel = {
       )
 
       await connection.commit()
-      return cleanObject
+      return { id }
     } catch (e) {
       await connection.rollback()
 

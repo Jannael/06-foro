@@ -73,8 +73,8 @@ export const ThreadModel = {
     }
   },
 
-  update: async function (userId: string, data: { name?: string, description?: string }, connection: mysql.Connection) {
-    if (userId === '' || data === undefined || (data.name === undefined && data.description === undefined)) {
+  update: async function (userId: string, threadId: string, data: { name?: string, description?: string }, connection: mysql.Connection) {
+    if (userId === '' || threadId === '' || data === undefined || (data.name === undefined && data.description === undefined)) {
       throw new UserBadRequestError('Missing data')
     }
 
@@ -84,9 +84,11 @@ export const ThreadModel = {
 
       await connection.beginTransaction()
       await connection.query(
-        'UPDATE THREAD SET ? WHERE ID_USER = UUID_TO_BIN(?)',
-        [values, userId]
+        'UPDATE THREAD SET ? WHERE ID_USER = UUID_TO_BIN(?) AND ID = UUID_TO_BIN(?)',
+        [values, userId, threadId]
       )
+      await connection.commit()
+      return { userId }
     } catch (e) {
       await connection.rollback()
       throw new DatabaseError('Error updating thread')

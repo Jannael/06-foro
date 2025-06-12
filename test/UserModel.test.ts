@@ -35,7 +35,7 @@ describe('User Model', () => {
 
   test('Update user', async () => {
     const response = await UserModel.update(userId, { name: 'John Doe2' }, connection)
-    expect(response).toEqual({ NAME: 'John Doe2' })
+    expect(response).toEqual({ id: userId })
   })
 
   describe('user Model Bad Requests', () => {

@@ -37,9 +37,8 @@ export const UserModel = {
         'SELECT BIN_TO_UUID(ID) AS ID FROM USER WHERE NAME = ?',
         [name]
       )
-
       await connection.commit()
-      return { name, email, password, id: id[0] }
+      return { name, email, password, id: (id as any)[0][0].ID }
     } catch (e) {
       if ((e as Error).message.includes('Duplicate entry')) {
         throw new DuplicateEntryError('Duplicate entry')

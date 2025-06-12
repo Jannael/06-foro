@@ -28,9 +28,9 @@ describe('User Model', () => {
   test('Create user', async () => {
     const response = await UserModel.create('John Doe', 'john@doe.com', '123456', connection)
 
-    userId = (response.id as any)[0].ID
+    userId = response.id
 
-    expect(response).toEqual({ name: 'John Doe', email: 'john@doe.com', password: '123456', id: expect.any(Object) })
+    expect(response).toEqual({ name: 'John Doe', email: 'john@doe.com', password: '123456', id: expect.any(String) })
   })
 
   test('Update user', async () => {

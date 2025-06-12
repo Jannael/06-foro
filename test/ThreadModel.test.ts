@@ -24,17 +24,25 @@ describe('Thread Model', () => {
   })
 
   describe('Thread Model Functions', () => {
+    let userId: string
+    beforeAll(async () => {
+      const user = await UserModel.create('createThreadUser', 'john@doe.com', '123456', connection)
+      userId = user.id
+    })
+
+    afterAll(async () => {
+      await UserModel.delete(userId, connection)
+    })
+
     test('getAll thread', async () => {
       const response = await ThreadModel.getAll(connection)
       expect(response).toEqual(expect.any(Array))
     })
 
     test('Create thread', async () => {
-      const userId = await UserModel.create('createThreadUser', 'john@doe.com', '123456', connection)
-      const response = await ThreadModel.create((userId.id as any)[0].ID, 'Thread 1', 'Description 1', connection)
+      const response = await ThreadModel.create(userId, 'Thread 1', 'Description 1', connection)
 
-      await ThreadModel.delete((userId.id as any)[0].ID, response.threadId.ID, connection)
-      await UserModel.delete((userId.id as any)[0].ID, connection)
+      await ThreadModel.delete(userId, response.threadId.ID, connection)
 
       const schemaResult = returnSchemaCreateThread.parse(response)
       expect(schemaResult).toEqual(response)

@@ -60,19 +60,20 @@ export const UserModel = {
       const cleanObject = Object.fromEntries(
         Object.entries(hashValues).filter(([_, value]) => value != null)
       )
-
+      console.log(cleanObject)
       if (Object.keys(cleanObject).length === 0 || id === '') {
         throw new MissingDataError('Missing data')
       }
 
       await connection.query(
-        'UPDATE USER SET ? WHERE ID = UUUID_TO_BIN(?)',
+        'UPDATE USER SET ? WHERE ID = UUID_TO_BIN(?)',
         [cleanObject, id]
       )
 
       await connection.commit()
       return cleanObject
     } catch (e) {
+      console.log(e)
       await connection.rollback()
       throw new DatabaseError('Error updating user')
     }

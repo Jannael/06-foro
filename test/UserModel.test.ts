@@ -27,6 +27,11 @@ describe('User Model', () => {
     expect(response).toEqual({ name: 'John Doe', email: 'john@doe.com', password: '123456', id: expect.any(Object) })
   })
 
+  test('Update user', async () => {
+    const response = await UserModel.update(userId, { name: 'John Doe2' }, connection)
+    expect(response).toEqual({ NAME: 'John Doe2' })
+  })
+
   test('delete user', async () => {
     const response = await UserModel.delete(userId, connection)
     expect(response).toEqual({ id: userId })

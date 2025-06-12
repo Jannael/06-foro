@@ -31,7 +31,21 @@ export const UserController = {
     }
   },
 
-  update: function (req: Request, res: Response) {
+  update: async function (req: Request, res: Response) {
+    const userId = (req as CustomRequest).UserId
+    const data = req.body
+    const connection = (req as CustomRequest).connectionDB
+
+    if (userId === '' || data === undefined) {
+      res.status(400)
+    }
+
+    try {
+      const response = await UserModel.update(userId, data, connection)
+      res.status(200).json(response)
+    } catch (e) {
+      res.status(500).json({ message: 'Error updating user' })
+    }
   },
 
   delete: function (req: Request, res: Response) {

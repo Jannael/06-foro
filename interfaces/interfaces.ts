@@ -3,4 +3,5 @@ import { Request } from 'express'
 
 export interface CustomRequest extends Request {
   connectionDB: Connection
+  UserId: string
 }

@@ -5,7 +5,7 @@ export const ThreadController = {
     res.send('getAll')
   },
 
-  getById: function (req: Request, res: Response) {
+  getMsgById: function (req: Request, res: Response) {
     res.send('getById')
   },
 

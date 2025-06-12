@@ -14,6 +14,10 @@ const salt = Number(process.env.SALT as string)
 
 export const UserModel = {
   create: async function (name: string, email: string, password: string, connection: mysql.Connection) {
+    if (name === '' || email === '' || password === '') {
+      throw new MissingDataError('Missing data')
+    }
+
     try {
       await connection.beginTransaction()
 
@@ -58,6 +62,7 @@ export const UserModel = {
       const cleanObject = Object.fromEntries(
         Object.entries(hashValues).filter(([_, value]) => value != null)
       )
+
       if (Object.keys(cleanObject).length === 0 || id === '') {
         throw new MissingDataError('Missing data')
       }
@@ -71,11 +76,19 @@ export const UserModel = {
       return cleanObject
     } catch (e) {
       await connection.rollback()
+
+      if (e instanceof MissingDataError) {
+        throw new MissingDataError('Missing data')
+      }
+
       throw new DatabaseError('Error updating user')
     }
   },
 
   delete: async function (id: string, connection: mysql.Connection) {
+    if (id === '') {
+      throw new MissingDataError('Missing data')
+    }
     try {
       await connection.beginTransaction()
 
@@ -89,11 +102,15 @@ export const UserModel = {
     }
   },
 
-  login: async function (id: string, email: string, password: string, connection: mysql.Connection) {
+  login: async function (name: string, password: string, connection: mysql.Connection) {
+    if (name === '' || password === '') {
+      throw new MissingDataError('Missing data')
+    }
+
     try {
       const response = await connection.query(
-        'SELECT PASSWORD FROM USER WHERE ID = UUID_TO_BIN(?)',
-        [id]
+        'SELECT PASSWORD FROM USER WHERE NAME = ?',
+        [name]
       )
 
       const PASSWORD = await bcrypt.compare(password, (response as any)[0][0].PASSWORD)
@@ -102,8 +119,11 @@ export const UserModel = {
         throw new UserBadRequestError('Invalid password')
       }
 
-      return { id }
+      return { name }
     } catch (e) {
+      if (e instanceof UserBadRequestError) {
+        throw new UserBadRequestError('Invalid password')
+      }
       throw new DatabaseError('Error logging in user')
     }
   }

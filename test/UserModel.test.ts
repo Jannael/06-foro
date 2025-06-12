@@ -1,7 +1,11 @@
 import { UserModel } from '../models/user'
 import mysql from 'mysql2/promise'
 import dotenv from 'dotenv'
-
+import {
+  UserBadRequestError,
+  MissingDataError,
+  DuplicateEntryError
+} from '../errors/errors'
 dotenv.config()
 
 describe('User Model', () => {
@@ -23,7 +27,9 @@ describe('User Model', () => {
 
   test('Create user', async () => {
     const response = await UserModel.create('John Doe', 'john@doe.com', '123456', connection)
+
     userId = (response.id as any)[0].ID
+
     expect(response).toEqual({ name: 'John Doe', email: 'john@doe.com', password: '123456', id: expect.any(Object) })
   })
 
@@ -32,9 +38,45 @@ describe('User Model', () => {
     expect(response).toEqual({ NAME: 'John Doe2' })
   })
 
+  describe('user Model Bad Requests', () => {
+    test('create user', async () => {
+      await expect(UserModel.create('', 'john@doe.com', '123456', connection))
+        .rejects.toThrow(new MissingDataError('Missing data'))
+
+      await expect(UserModel.create('John Doe2', 'john@Doe.com', '123456', connection)) // duplicate entry
+        .rejects.toThrow(new DuplicateEntryError('Duplicate entry'))
+    })
+
+    test('Update User', async () => {
+      await expect(UserModel.update(userId, {}, connection))
+        .rejects.toThrow(new MissingDataError('Missing data'))
+
+      await expect(UserModel.update('', { name: 'John Doe2' }, connection))
+        .rejects.toThrow(new MissingDataError('Missing data'))
+    })
+
+    test('Delete User', async () => {
+      await expect(UserModel.delete('', connection))
+        .rejects.toThrow(new MissingDataError('Missing data'))
+    })
+
+    test('Login User', async () => {
+      await expect(UserModel.login('', '123456', connection))
+        .rejects.toThrow(new MissingDataError('Missing data'))
+
+      await expect(UserModel.login('John Doe2', '', connection))
+        .rejects.toThrow(new MissingDataError('Missing data'))
+
+      await expect(UserModel.login('John Doe2', '12346', connection))
+        .rejects.toThrow(new UserBadRequestError('Invalid password'))
+    })
+  })
+
   test('login user', async () => {
-    const response = await UserModel.login(userId, 'john@doe.com', '123456', connection)
-    expect(response).toEqual({ id: userId })
+    const response = await UserModel.login('John Doe2', '123456', connection)
+    // const badResponse = await UserModel.login('John Doe2', '12356', connection)
+    expect(response).toEqual({ name: 'John Doe2' })
+    // expect(badResponse).toThrow(new UserBadRequestError('Invalid password'))
   })
 
   test('delete user', async () => {

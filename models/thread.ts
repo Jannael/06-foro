@@ -61,5 +61,31 @@ export const ThreadModel = {
       await connection.rollback()
       throw new DatabaseError('Error updating thread')
     }
+  },
+
+  delete: async function (userId: string, threadId: string, connection: mysql.Connection) {
+    if (userId === '' || threadId === '') {
+      throw new UserBadRequestError('Missing data')
+    }
+
+    try {
+      await connection.beginTransaction()
+
+      await connection.query(
+        'DELETE FROM THREAD WHERE ID_USER = UUID_TO_BIN(?) AND ID = UUID_TO_BIN(?)',
+        [userId, threadId]
+      )
+
+      await connection.query(
+        'DELETE FROM THREAD_MSG WHERE ID_THREAD = UUID_TO_BIN(?) AND ID_USER = UUID_TO_BIN(?)',
+        [threadId, userId]
+      )
+
+      await connection.commit()
+      return { userId }
+    } catch (e) {
+      await connection.rollback()
+      throw new DatabaseError('Error deleting thread')
+    }
   }
 }

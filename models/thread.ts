@@ -25,7 +25,6 @@ export const ThreadModel = {
       )
       return rows
     } catch (e) {
-      console.log(e)
       throw new DatabaseError('Error getting thread msg')
     }
   },
@@ -75,7 +74,7 @@ export const ThreadModel = {
         [threadId, userId, msg]
       )
 
-      return idMsg[0]
+      return (idMsg as any)[0][0]
     } catch (e) {
       await connection.rollback()
       throw new DatabaseError('Error creating thread')
@@ -133,13 +132,13 @@ export const ThreadModel = {
       await connection.beginTransaction()
 
       await connection.query(
-        'DELETE FROM THREAD WHERE USER_ID = UUID_TO_BIN(?) AND ID = UUID_TO_BIN(?)',
-        [userId, threadId]
+        'DELETE FROM THREAD_MSG WHERE ID_THREAD = UUID_TO_BIN(?) AND ID_USER = UUID_TO_BIN(?)',
+        [threadId, userId]
       )
 
       await connection.query(
-        'DELETE FROM THREAD_MSG WHERE ID_THREAD = UUID_TO_BIN(?) AND ID_USER = UUID_TO_BIN(?)',
-        [threadId, userId]
+        'DELETE FROM THREAD WHERE USER_ID = UUID_TO_BIN(?) AND ID = UUID_TO_BIN(?)',
+        [userId, threadId]
       )
 
       await connection.commit()

@@ -48,6 +48,30 @@ describe('Thread Model', () => {
       expect(schemaResult).toEqual(response)
     })
 
+    describe('Thread Model MSG Functions', () => {
+      test('getAll thread msg', async () => {
+        const response = await ThreadModel.getMsgById(ThreadId, connection)
+        expect(response).toEqual(expect.any(Array))
+      })
+
+      let MsgId: string
+      test('Create thread msg', async () => {
+        const response = await ThreadModel.createMsg(userId, ThreadId, 'Message 1', connection)
+        MsgId = response.ID_MSG
+        expect(response).toEqual({ ID_MSG: expect.any(String) })
+      })
+
+      test('Update thread msg', async () => {
+        const response = await ThreadModel.updateMsg(userId, ThreadId, MsgId, 'Message 2', connection)
+        expect(response).toEqual({ userId, threadId: ThreadId })
+      })
+
+      test('Delete thread msg', async () => {
+        const response = await ThreadModel.deleteMsg(userId, ThreadId, MsgId, connection)
+        expect(response).toEqual({ userId, threadId: ThreadId })
+      })
+    })
+
     test('Update thread', async () => {
       const response = await ThreadModel.update(userId, ThreadId, { name: 'Thread 2' }, connection)
       expect(response).toEqual({ userId })
@@ -57,19 +81,5 @@ describe('Thread Model', () => {
       const response = await ThreadModel.delete(userId, ThreadId, connection)
       expect(response).toEqual({ userId })
     })
-  })
-
-  describe('Thread Model MSG Functions', () => {
-    test('getAll thread msg', async () => {
-      const response = await ThreadModel.getMsgById(ThreadId, connection)
-      expect(response).toEqual(expect.any(Array))
-    })
-
-    test('Create thread msg', async () => {
-    })
-
-    test('Update thread msg', async () => {})
-
-    test('Delete thread msg', async () => {})
   })
 })

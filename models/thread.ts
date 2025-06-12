@@ -25,21 +25,24 @@ export const ThreadModel = {
     if (name === '' || description === '' || userId === '') {
       throw new UserBadRequestError('Missing data')
     }
+
     try {
       await connection.beginTransaction()
       await connection.query(
-        'INSERT INTO THREAD (ID_USER, NAME, DESCRIPTION) VALUES (UUID_TO_BIN(?), ?, ?)',
+        'INSERT INTO THREAD (USER_ID, NAME, DESCRIPTION) VALUES (UUID_TO_BIN(?), ?, ?)',
         [userId, name, description]
       )
 
       const threadId = await connection.query(
-        'SELECT ID FROM THREAD WHERE ID_USER = UUID_TO_BIN(?) AND NAME = ? AND DESCRIPTION = ?',
+        'SELECT BIN_TO_UUID(ID) AS ID FROM THREAD WHERE USER_ID = UUID_TO_BIN(?) AND NAME = ? AND DESCRIPTION = ?',
         [userId, name, description]
       )
 
       await connection.commit()
-      return threadId[0]
+      return { threadId: (threadId as any)[0][0], userId, name, description }
     } catch (error) {
+      await connection.rollback()
+      throw new DatabaseError('Error creating thread')
     }
   },
 
@@ -119,7 +122,7 @@ export const ThreadModel = {
       await connection.beginTransaction()
 
       await connection.query(
-        'DELETE FROM THREAD WHERE ID_USER = UUID_TO_BIN(?) AND ID = UUID_TO_BIN(?)',
+        'DELETE FROM THREAD WHERE USER_ID = UUID_TO_BIN(?) AND ID = UUID_TO_BIN(?)',
         [userId, threadId]
       )
 
@@ -131,6 +134,7 @@ export const ThreadModel = {
       await connection.commit()
       return { userId }
     } catch (e) {
+      console.error(e)
       await connection.rollback()
       throw new DatabaseError('Error deleting thread')
     }

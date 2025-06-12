@@ -91,11 +91,14 @@ export const UserModel = {
     try {
       await connection.beginTransaction()
 
+      await connection.query('DELETE FROM THREAD WHERE USER_ID = UUID_TO_BIN(?)', [id])
+      await connection.query('DELETE FROM THREAD_MSG WHERE ID_USER = UUID_TO_BIN(?)', [id])
       await connection.query('DELETE FROM USER WHERE ID = UUID_TO_BIN(?)', [id])
 
       await connection.commit()
       return { id }
     } catch (e) {
+      console.log(e)
       await connection.rollback()
       throw new DatabaseError('Error deleting user')
     }

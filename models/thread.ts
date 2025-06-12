@@ -12,13 +12,22 @@ export const ThreadModel = {
   },
 
   getMsgById: async function (id: string, connection: mysql.Connection) {
-    const [rows] = await connection.query(
-      `SELECT USER.NAME AS NAME, THREAD_MSG.MSG AS MSG, BIN_TO_UUID(THREAD_MSG.ID) AS ID_MSG FROM THREAD_MSG
-      WHERE ID_THREAD = UUID_TO_BIN(?)
-      JOIN USERS ON USERS.ID = THREAD_MSG.ID_USER`,
-      [id]
-    )
-    return rows
+    try {
+      const [rows] = await connection.query(
+        `SELECT 
+        USER.NAME AS NAME, 
+        THREAD_MSG.MSG AS MSG, 
+        BIN_TO_UUID(THREAD_MSG.ID) AS ID_MSG 
+        FROM THREAD_MSG
+        JOIN USER ON USER.ID = THREAD_MSG.ID_USER
+        WHERE ID_THREAD = UUID_TO_BIN(?)`,
+        [id]
+      )
+      return rows
+    } catch (e) {
+      console.log(e)
+      throw new DatabaseError('Error getting thread msg')
+    }
   },
 
   create: async function (userId: string, name: string, description: string, connection: mysql.Connection) {
@@ -41,7 +50,6 @@ export const ThreadModel = {
       await connection.commit()
       return { threadId: (threadId as any)[0][0].ID, userId, name, description }
     } catch (error) {
-      console.log(error)
       await connection.rollback()
       throw new DatabaseError('Error creating thread')
     }
@@ -137,7 +145,6 @@ export const ThreadModel = {
       await connection.commit()
       return { userId }
     } catch (e) {
-      console.error(e)
       await connection.rollback()
       throw new DatabaseError('Error deleting thread')
     }

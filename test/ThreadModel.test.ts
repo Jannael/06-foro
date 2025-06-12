@@ -13,6 +13,9 @@ const returnSchemaCreateThread = zod.object({
 
 describe('Thread Model', () => {
   let connection: mysql.Connection
+  let userId: string
+  let ThreadId: string
+
   beforeAll(async () => {
     connection = await conectDB()
   })
@@ -22,8 +25,6 @@ describe('Thread Model', () => {
   })
 
   describe('Thread Model Functions', () => {
-    let userId: string
-    let ThreadId: string
     beforeAll(async () => {
       const user = await UserModel.create('createThreadUser', 'john@doe.com', '123456', connection)
       userId = user.id
@@ -59,9 +60,16 @@ describe('Thread Model', () => {
   })
 
   describe('Thread Model MSG Functions', () => {
-    test('getAll thread msg', async () => {})
-    test('Create thread msg', async () => {})
+    test('getAll thread msg', async () => {
+      const response = await ThreadModel.getMsgById(ThreadId, connection)
+      expect(response).toEqual(expect.any(Array))
+    })
+
+    test('Create thread msg', async () => {
+    })
+
     test('Update thread msg', async () => {})
+
     test('Delete thread msg', async () => {})
   })
 })

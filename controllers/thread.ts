@@ -9,7 +9,7 @@ export const ThreadController = {
     res.send('getById')
   },
 
-  create: function (req: Request, res: Response) {
+  createThread: function (req: Request, res: Response) {
     res.send('create')
   },
 

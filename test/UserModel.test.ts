@@ -32,6 +32,11 @@ describe('User Model', () => {
     expect(response).toEqual({ NAME: 'John Doe2' })
   })
 
+  test('login user', async () => {
+    const response = await UserModel.login(userId, 'john@doe.com', '123456', connection)
+    expect(response).toEqual({ id: userId })
+  })
+
   test('delete user', async () => {
     const response = await UserModel.delete(userId, connection)
     expect(response).toEqual({ id: userId })

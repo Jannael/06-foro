@@ -1,16 +1,14 @@
 import bcrypt from 'bcrypt'
 import dotenv from 'dotenv'
 import mysql from 'mysql2/promise'
-import { DatabaseError, MissingDataError, DuplicateEntryError } from '../errors/errors'
+import {
+  DatabaseError,
+  MissingDataError,
+  DuplicateEntryError,
+  UserBadRequestError
+} from '../errors/errors'
 
 dotenv.config()
-
-// const connection = await mysql.createConnection({
-// host: process.env.DB_HOST as string,
-// user: process.env.DB_USER as string,
-// password: process.env.DB_PASSWORD as string,
-// database: process.env.DB_NAME
-// })
 
 const salt = Number(process.env.SALT as string)
 
@@ -60,7 +58,6 @@ export const UserModel = {
       const cleanObject = Object.fromEntries(
         Object.entries(hashValues).filter(([_, value]) => value != null)
       )
-      console.log(cleanObject)
       if (Object.keys(cleanObject).length === 0 || id === '') {
         throw new MissingDataError('Missing data')
       }
@@ -73,7 +70,6 @@ export const UserModel = {
       await connection.commit()
       return cleanObject
     } catch (e) {
-      console.log(e)
       await connection.rollback()
       throw new DatabaseError('Error updating user')
     }
@@ -90,6 +86,25 @@ export const UserModel = {
     } catch (e) {
       await connection.rollback()
       throw new DatabaseError('Error deleting user')
+    }
+  },
+
+  login: async function (id: string, email: string, password: string, connection: mysql.Connection) {
+    try {
+      const response = await connection.query(
+        'SELECT PASSWORD FROM USER WHERE ID = UUID_TO_BIN(?)',
+        [id]
+      )
+
+      const PASSWORD = await bcrypt.compare(password, (response as any)[0][0].PASSWORD)
+
+      if (!PASSWORD) {
+        throw new UserBadRequestError('Invalid password')
+      }
+
+      return { id }
+    } catch (e) {
+      throw new DatabaseError('Error logging in user')
     }
   }
 }

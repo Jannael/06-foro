@@ -5,9 +5,7 @@ import { UserModel } from '../models/user'
 import zod from 'zod'
 
 const returnSchemaCreateThread = zod.object({
-  threadId: zod.object(
-    { ID: zod.string().uuid() }
-  ),
+  threadId: zod.string().uuid(),
   userId: zod.string(),
   name: zod.string(),
   description: zod.string()
@@ -25,6 +23,7 @@ describe('Thread Model', () => {
 
   describe('Thread Model Functions', () => {
     let userId: string
+    let ThreadId: string
     beforeAll(async () => {
       const user = await UserModel.create('createThreadUser', 'john@doe.com', '123456', connection)
       userId = user.id
@@ -42,14 +41,21 @@ describe('Thread Model', () => {
     test('Create thread', async () => {
       const response = await ThreadModel.create(userId, 'Thread 1', 'Description 1', connection)
 
-      await ThreadModel.delete(userId, response.threadId.ID, connection)
+      ThreadId = response.threadId
 
       const schemaResult = returnSchemaCreateThread.parse(response)
       expect(schemaResult).toEqual(response)
     })
 
-    test('Update thread', async () => {})
-    test('Delete thread', async () => {})
+    test('Update thread', async () => {
+      const response = await ThreadModel.update(userId, ThreadId, { name: 'Thread 2' }, connection)
+      expect(response).toEqual({ userId })
+    })
+
+    test('Delete thread', async () => {
+      const response = await ThreadModel.delete(userId, ThreadId, connection)
+      expect(response).toEqual({ userId })
+    })
   })
 
   describe('Thread Model MSG Functions', () => {

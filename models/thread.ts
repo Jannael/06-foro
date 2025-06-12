@@ -39,7 +39,7 @@ export const ThreadModel = {
       )
 
       await connection.commit()
-      return { threadId: (threadId as any)[0][0], userId, name, description }
+      return { threadId: (threadId as any)[0][0].ID, userId, name, description }
     } catch (error) {
       console.log(error)
       await connection.rollback()
@@ -85,7 +85,7 @@ export const ThreadModel = {
 
       await connection.beginTransaction()
       await connection.query(
-        'UPDATE THREAD SET ? WHERE ID_USER = UUID_TO_BIN(?) AND ID = UUID_TO_BIN(?)',
+        'UPDATE THREAD SET ? WHERE USER_ID = UUID_TO_BIN(?) AND ID = UUID_TO_BIN(?)',
         [values, userId, threadId]
       )
       await connection.commit()

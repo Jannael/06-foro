@@ -1,22 +1,23 @@
+import { Request, Response } from 'express'
 
-export class UserController {
-    static create(req, res) {
-        res.send('create');;;;;;
-    }
+export const UserController = {
+  create: function (req: Request, res: Response) {
+    res.send('create')
+  },
 
-    static update(req, res) {
-        res.send('update')
-    }
+  update: function (req: Request, res: Response) {
+    res.send('update')
+  },
 
-    static delete(req, res) {
-        res.send('delete')
-    }
+  delete: function (req: Request, res: Response) {
+    res.send('delete')
+  },
 
-    static login(req, res) {
-        res.send('login')
-    }
+  login: function (req: Request, res: Response) {
+    res.send('login')
+  },
 
-    static logout(req, res) {
-        res.send('logout')
-    }
+  logout: function (req: Request, res: Response) {
+    res.send('logout')
+  }
 }

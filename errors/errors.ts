@@ -10,3 +10,4 @@ function createError (name: string): any {
 
 export const DatabaseError = createError('databaseError')
 export const MissingDataError = createError('missingDataError')
+export const DuplicateEntryError = createError('duplicateEntryError')

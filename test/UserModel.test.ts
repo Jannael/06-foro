@@ -19,9 +19,16 @@ describe('User Model', () => {
     await connection.end()
   })
 
+  let userId: string
+
   test('Create user', async () => {
     const response = await UserModel.create('John Doe', 'john@doe.com', '123456', connection)
+    userId = (response.id as any)[0].ID
+    expect(response).toEqual({ name: 'John Doe', email: 'john@doe.com', password: '123456', id: expect.any(Object) })
+  })
 
-    expect(response).toEqual({ name: 'John Doe', email: 'john@doe.com', password: '123456' })
+  test('delete user', async () => {
+    const response = await UserModel.delete(userId, connection)
+    expect(response).toEqual({ id: userId })
   })
 })

@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt'
 import dotenv from 'dotenv'
 import mysql from 'mysql2/promise'
-import { DatabaseError, MissingDataError } from '../errors/errors'
+import { DatabaseError, MissingDataError, DuplicateEntryError } from '../errors/errors'
 
 dotenv.config()
 
@@ -30,10 +30,18 @@ export const UserModel = {
         Object.values(hashValues)
       )
 
+      const id = await connection.query(
+        'SELECT BIN_TO_UUID(ID) AS ID FROM USER WHERE NAME = ?',
+        [name]
+      )
+
       await connection.commit()
-      return { name, email, password }
+      return { name, email, password, id: id[0] }
     } catch (e) {
-      console.log(e)
+      if ((e as Error).message.includes('Duplicate entry')) {
+        throw new DuplicateEntryError('Duplicate entry')
+      }
+
       await connection.rollback()
       throw new DatabaseError('Error creating user')
     }
@@ -58,7 +66,7 @@ export const UserModel = {
       }
 
       await connection.query(
-        'UPDATE USER SET ? WHERE ID = ?',
+        'UPDATE USER SET ? WHERE ID = UUUID_TO_BIN(?)',
         [cleanObject, id]
       )
 
@@ -74,7 +82,7 @@ export const UserModel = {
     try {
       await connection.beginTransaction()
 
-      await connection.query('DELETE FROM USER WHERE ID = ?', [id])
+      await connection.query('DELETE FROM USER WHERE ID = UUID_TO_BIN(?)', [id])
 
       await connection.commit()
       return { id }

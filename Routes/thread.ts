@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { ThreadController } from '../controllers/thread.ts'
+import { ThreadController } from '../controllers/thread'
 
 export const ThreadRouter = Router()
 

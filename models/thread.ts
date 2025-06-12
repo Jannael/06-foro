@@ -1,6 +1,8 @@
 import mysql from 'mysql2/promise'
+import { notNullValues } from '../utils/utils'
 import {
-  UserBadRequestError
+  UserBadRequestError,
+  DatabaseError
 } from '../errors/errors'
 
 export const ThreadModel = {
@@ -38,6 +40,26 @@ export const ThreadModel = {
       await connection.commit()
       return threadId[0]
     } catch (error) {
+    }
+  },
+
+  update: async function (userId: string, data: { name?: string, description?: string }, connection: mysql.Connection) {
+    if (userId === '' || data === undefined || (data.name === undefined && data.description === undefined)) {
+      throw new UserBadRequestError('Missing data')
+    }
+
+    try {
+      const entries = { NAME: data.name, DESCRIPTION: data.description }
+      const values = notNullValues(entries)
+
+      await connection.beginTransaction()
+      await connection.query(
+        'UPDATE THREAD SET ? WHERE ID_USER = UUID_TO_BIN(?)',
+        [values, userId]
+      )
+    } catch (e) {
+      await connection.rollback()
+      throw new DatabaseError('Error updating thread')
     }
   }
 }

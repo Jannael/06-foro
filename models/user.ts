@@ -7,6 +7,7 @@ import {
   DuplicateEntryError,
   UserBadRequestError
 } from '../errors/errors'
+import { notNullValues } from '../utils/utils'
 
 dotenv.config()
 
@@ -59,9 +60,7 @@ export const UserModel = {
         PASSWORD: (data.password !== undefined) ? await bcrypt.hash(data.password, salt) : undefined
       }
 
-      const cleanObject = Object.fromEntries(
-        Object.entries(hashValues).filter(([_, value]) => value != null)
-      )
+      const cleanObject = notNullValues(hashValues)
 
       if (Object.keys(cleanObject).length === 0 || id === '') {
         throw new MissingDataError('Missing data')

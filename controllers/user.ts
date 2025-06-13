@@ -131,6 +131,7 @@ export const UserController = {
       res.status(400).send('Invalid code')
       return
     }
+
     const signBoolean = jsonwebtoken.sign({ emailVerified: true }, process.env.JWT_SECRET as string, { expiresIn: '5m' })
 
     res.clearCookie('codeToVerifyEmail')

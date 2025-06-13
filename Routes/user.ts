@@ -14,5 +14,5 @@ UserRouter.get('/refreshToken', UserValidationData, UserController.refreshToken)
 UserRouter.patch('/update', MFA, UserLogin, UserValidationDataPartial, UserController.update)
 UserRouter.delete('/delete', MFA, UserLogin, UserController.delete)
 
-UserRouter.post('/login', MFA, UserController.login)
+UserRouter.post('/login', MFA, UserValidationDataPartial, UserController.login)
 UserRouter.post('/logout', UserController.logout)

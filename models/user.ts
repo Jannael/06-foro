@@ -128,5 +128,32 @@ export const UserModel = {
       }
       throw new DatabaseError('Error logging in user')
     }
+  },
+
+  verifyEmail: async function (name: string, email: string, connection: mysql.Connection) {
+    if (name === '' || email === '') {
+      throw new MissingDataError('Missing data')
+    }
+
+    try {
+      const response = await connection.query(
+        'SELECT EMAIL FROM USER WHERE NAME = ?',
+        [name]
+      )
+      const EMAIL = await bcrypt.compare(email, (response as any)[0][0].EMAIL)
+
+      if (!EMAIL) {
+        throw new UserBadRequestError('Invalid email')
+      }
+
+      return { email }
+
+    } catch (e) {
+      if (e instanceof UserBadRequestError) {
+        throw new UserBadRequestError('Invalid email')
+      }
+
+      throw new DatabaseError('Error invalid or not found email')
+    }
   }
 }

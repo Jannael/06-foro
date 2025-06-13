@@ -79,15 +79,48 @@ export const UserController = {
     }
   },
 
-  login: async function (req: Request, res: Response) {
-    const { name, password } = req.body
+  verifyLogin: async function (req: Request, res: Response) {
+    const { name, password, email } = req.body
 
-    if (name === '' || password === '') {
+    if (name === '' || password === '' || email === '') {
       res.status(400).send('Invalid or missing data')
       return
     }
 
     try {
+      const emailVerified = await UserModel.verifyEmail(name, email, await connection)
+
+      if (!emailVerified.emailVerified) {
+        res.status(400).send('Invalid email')
+        return
+      }
+
+      const code = generateCode()
+      const encryptedCode = jsonwebtoken.sign({ code }, process.env.JWT_SECRET as string, { expiresIn: '5m' })
+
+      await sendEmail(email, code)
+      res.cookie('codeToVerifyEmailLogin', encryptedCode, { httpOnly: true })
+      res.status(200).send('Email sent')
+    } catch (e) {
+      res.status(500).json({ message: 'Error logging in user please try again' })
+    }
+  },
+
+  login: async function (req: Request, res: Response) {
+    const { name, password, email } = req.body
+
+    if (name === '' || password === '' || email === '') {
+      res.status(400).send('Invalid or missing data')
+      return
+    }
+
+    try {
+      const emailVerified = await UserModel.verifyEmail(name, email, await connection)
+      if (!emailVerified.emailVerified) {
+        res.status(400).send('Invalid email')
+        return
+      }
+
       const id = await UserModel.login(name, password, await connection)
 
       const accessToken = jsonwebtoken.sign({ id }, process.env.JWT_SECRET as string, { expiresIn: '1h' })

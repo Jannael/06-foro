@@ -16,3 +16,17 @@ export function MFA (req: Request, res: Response, next: NextFunction): void {
   res.clearCookie('emailVerified')
   next()
 }
+
+export function MFALogin (req: Request, res: Response, next: NextFunction): void {
+  const isVerifiedEmail = req.cookies.codeToVerifyEmailLogin
+  const code = req.body.code
+  const secureCode = jsonwebtoken.verify(isVerifiedEmail, process.env.JWT_SECRET as string) as { code: number }
+
+  if (secureCode.code !== code) {
+    res.status(401).send('Unauthorized, please verify your email')
+    return
+  }
+
+  res.clearCookie('codeToVerifyEmailLogin')
+  next()
+}

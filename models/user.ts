@@ -146,8 +146,7 @@ export const UserModel = {
         throw new UserBadRequestError('Invalid email')
       }
 
-      return { email }
-
+      return { email, emailVerified: true }
     } catch (e) {
       if (e instanceof UserBadRequestError) {
         throw new UserBadRequestError('Invalid email')

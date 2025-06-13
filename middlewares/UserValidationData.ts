@@ -31,7 +31,6 @@ export async function UserValidationDataPartial (req: Request, res: Response, ne
     if (data.password === undefined) {
       res.status(401).send('Unauthorized')
     }
-
     req.body = data
     next()
   } catch (e) {

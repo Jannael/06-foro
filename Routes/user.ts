@@ -6,6 +6,8 @@ import { UserLogin } from '../middlewares/UserLogin'
 export const UserRouter = Router()
 
 UserRouter.post('/register', UserValidationData, UserController.create)
+UserRouter.post('/askForCode', UserValidationData, UserController.askForCode)
+UserRouter.post('/verifyCode', UserValidationData, UserController.verifyCode)
 UserRouter.patch('/update', UserLogin, UserValidationDataPartial, UserController.update)
 UserRouter.delete('/delete', UserController.delete)
 

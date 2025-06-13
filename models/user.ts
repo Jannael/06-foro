@@ -40,11 +40,12 @@ export const UserModel = {
       await connection.commit()
       return { name, email, password, id: (id as any)[0][0].ID }
     } catch (e) {
+      await connection.rollback()
+
       if ((e as Error).message.includes('Duplicate entry')) {
         throw new DuplicateEntryError('Duplicate entry')
       }
 
-      await connection.rollback()
       throw new DatabaseError('Error creating user')
     }
   },

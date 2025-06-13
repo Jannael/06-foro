@@ -79,7 +79,25 @@ export const UserController = {
     }
   },
 
-  login: function (req: Request, res: Response) {
+  login: async function (req: Request, res: Response) {
+    const { name, password } = req.body
+
+    if (name === '' || password === '') {
+      res.status(400).send('Invalid or missing data')
+      return
+    }
+
+    try {
+      const id = await UserModel.login(name, password, await connection)
+
+      const accessToken = jsonwebtoken.sign({ id }, process.env.JWT_SECRET as string, { expiresIn: '1h' })
+      const refreshToken = jsonwebtoken.sign({ id }, process.env.JWT_SECRET as string, { expiresIn: '7d' })
+      res.cookie('accessToken', accessToken, { httpOnly: true })
+      res.cookie('refreshToken', refreshToken, { httpOnly: true })
+      res.status(200).send('Logged in')
+    } catch (e) {
+      res.status(500).json({ message: 'Error logging in user please try again' })
+    }
   },
 
   logout: function (req: Request, res: Response) {

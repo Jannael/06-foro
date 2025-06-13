@@ -111,7 +111,7 @@ export const UserModel = {
 
     try {
       const response = await connection.query(
-        'SELECT PASSWORD FROM USER WHERE NAME = ?',
+        'SELECT BIN_TO_UUID(ID) AS ID, PASSWORD FROM USER WHERE NAME = ?',
         [name]
       )
 
@@ -121,7 +121,7 @@ export const UserModel = {
         throw new UserBadRequestError('Invalid password')
       }
 
-      return { name }
+      return { id: (response as any)[0][0].ID }
     } catch (e) {
       if (e instanceof UserBadRequestError) {
         throw new UserBadRequestError('Invalid password')

@@ -74,9 +74,7 @@ describe('User Model', () => {
 
   test('login user', async () => {
     const response = await UserModel.login('John Doe2', '123456', connection)
-    // const badResponse = await UserModel.login('John Doe2', '12356', connection)
-    expect(response).toEqual({ name: 'John Doe2' })
-    // expect(badResponse).toThrow(new UserBadRequestError('Invalid password'))
+    expect(response).toEqual({ id: userId })
   })
 
   test('delete user', async () => {

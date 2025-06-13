@@ -45,7 +45,7 @@ export const UserController = {
     }
   },
 
-  update: async function (req: Request, res: Response) {
+  /* TODO */ update: async function (req: Request, res: Response) {
     const userId = (req as CustomRequest).UserId
     const data = req.body
 
@@ -125,6 +125,7 @@ export const UserController = {
 
       const accessToken = jsonwebtoken.sign({ id }, process.env.JWT_SECRET as string, { expiresIn: '1h' })
       const refreshToken = jsonwebtoken.sign({ id }, process.env.JWT_SECRET as string, { expiresIn: '7d' })
+
       res.cookie('accessToken', accessToken, { httpOnly: true })
       res.cookie('refreshToken', refreshToken, { httpOnly: true })
       res.status(200).send('Logged in')
@@ -181,10 +182,11 @@ export const UserController = {
       return
     }
 
-    const signRefreshToken = jsonwebtoken.sign({ id: verifyRefreshToken.id }, process.env.JWT_SECRET as string, { expiresIn: '7d' })
     const accessToken = jsonwebtoken.sign({ id: verifyRefreshToken.id }, process.env.JWT_SECRET as string, { expiresIn: '1h' })
-    res.cookie('refreshToken', signRefreshToken, { httpOnly: true })
+    const signRefreshToken = jsonwebtoken.sign({ id: verifyRefreshToken.id }, process.env.JWT_SECRET as string, { expiresIn: '7d' })
+
     res.cookie('accessToken', accessToken, { httpOnly: true })
+    res.cookie('refreshToken', signRefreshToken, { httpOnly: true })
     res.status(200).send('Token refreshed')
   }
 }

@@ -17,16 +17,6 @@ const connection = connectDB()
 
 export const UserController = {
   create: async function (req: Request, res: Response) {
-    const verifiedEmail = req.cookies.emailVerified
-    const booleanEmailVerified = jsonwebtoken.verify(verifiedEmail, process.env.JWT_SECRET as string) as { emailVerified: boolean }
-
-    if (!booleanEmailVerified.emailVerified) {
-      res.status(401).send('Unauthorized, please verify your email')
-      return
-    }
-
-    res.clearCookie('emailVerified')
-
     const { name, email, password } = req.body
 
     if (name === '' || email === '' || password === '') {
@@ -77,13 +67,25 @@ export const UserController = {
     }
   },
 
-  delete: function (req: Request, res: Response) {
+  delete: async function (req: Request, res: Response) {
+    res.clearCookie('accessToken')
+    res.clearCookie('refreshToken')
+
+    try {
+      await UserModel.delete((req as CustomRequest).UserId, await connection)
+      res.status(204)
+    } catch (e) {
+      res.status(500).json({ message: 'Error deleting user' })
+    }
   },
 
   login: function (req: Request, res: Response) {
   },
 
   logout: function (req: Request, res: Response) {
+    res.clearCookie('accessToken')
+    res.clearCookie('refreshToken')
+    res.status(200).send('Logged out')
   },
 
   askForCode: async function (req: Request, res: Response) {
@@ -116,5 +118,21 @@ export const UserController = {
     res.clearCookie('codeToVerifyEmail')
     res.cookie('emailVerified', signBoolean, { httpOnly: true })
     res.status(200).send('email verified')
+  },
+
+  refreshToken: async function (req: Request, res: Response) {
+    const { refreshToken } = req.cookies
+    const verifyRefreshToken = jsonwebtoken.verify(refreshToken, process.env.JWT_SECRET as string) as { id: string }
+
+    if (verifyRefreshToken.id === undefined) {
+      res.status(401).send('You are not logged in')
+      return
+    }
+
+    const signRefreshToken = jsonwebtoken.sign({ id: verifyRefreshToken.id }, process.env.JWT_SECRET as string, { expiresIn: '7d' })
+    const accessToken = jsonwebtoken.sign({ id: verifyRefreshToken.id }, process.env.JWT_SECRET as string, { expiresIn: '1h' })
+    res.cookie('refreshToken', signRefreshToken, { httpOnly: true })
+    res.cookie('accessToken', accessToken, { httpOnly: true })
+    res.status(200).send('Token refreshed')
   }
 }

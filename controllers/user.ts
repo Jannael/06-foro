@@ -73,7 +73,7 @@ export const UserController = {
 
     try {
       await UserModel.delete((req as CustomRequest).UserId, await connection)
-      res.status(204)
+      res.sendStatus(204)
     } catch (e) {
       res.status(500).json({ message: 'Error deleting user' })
     }

@@ -61,4 +61,9 @@ describe('UserController Routes Functions', () => {
     expect(response.headers['set-cookie'][2]).toContain('refreshToken')
     expect(response.status).toBe(201)
   })
+
+  test('delete', async () => {
+    const response = await agent.delete('/api/user/delete')
+    expect(response.status).toBe(204)
+  })
 })

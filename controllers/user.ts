@@ -143,7 +143,7 @@ export const UserController = {
   askForCode: async function (req: Request, res: Response) {
     const { email, testCode } = req.body
     const code = testCode !== undefined && testCode === process.env.SECRET_CODE_TEST ? 1234 : generateCode()
-    const encryptedCode = jsonwebtoken.sign({ code }, process.env.JWT_SECRET as string, { expiresIn: '5m' })
+    const encryptedCode = jsonwebtoken.sign({ code, email }, process.env.JWT_SECRET as string, { expiresIn: '5m' })
 
     if (email === undefined || email === '') {
       res.status(400).send('Invalid or missing data')
@@ -157,19 +157,24 @@ export const UserController = {
 
   verifyCode: async function (req: Request, res: Response) {
     const { codeToVerifyEmail } = req.cookies
-    const { code } = req.body
+    const { code, email } = req.body
     if (codeToVerifyEmail === undefined || code === undefined) {
       res.status(400).send('Invalid or missing data')
       return
     }
 
-    const verifyCode = jsonwebtoken.verify(codeToVerifyEmail, process.env.JWT_SECRET as string) as { code: number }
+    const verifyCode = jsonwebtoken.verify(codeToVerifyEmail, process.env.JWT_SECRET as string) as { code: number, email: string }
     if (verifyCode.code !== Number(code)) {
       res.status(400).send('Invalid code')
       return
     }
 
-    const signBoolean = jsonwebtoken.sign({ emailVerified: true }, process.env.JWT_SECRET as string, { expiresIn: '5m' })
+    if (verifyCode.email !== email) {
+      res.status(400).send('Invalid email')
+      return
+    }
+
+    const signBoolean = jsonwebtoken.sign({ emailVerified: true, email }, process.env.JWT_SECRET as string, { expiresIn: '5m' })
 
     res.clearCookie('codeToVerifyEmail')
     res.cookie('emailVerified', signBoolean, { httpOnly: true })

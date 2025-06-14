@@ -29,11 +29,16 @@ export function generateCode (): number {
   return Math.floor(Math.random() * 10000)
 }
 
-export async function sendEmail (email: string, code: number): Promise<void> {
-  await transporter.sendMail({
-    from: process.env.EMAIL as string,
-    to: email,
-    subject: 'Verify your email',
-    text: `Your verification code is ${code}`
-  })
+export async function sendEmail (email: string, code: number): Promise<boolean> {
+  try {
+    await transporter.sendMail({
+      from: process.env.EMAIL as string,
+      to: email,
+      subject: 'Verify your email',
+      text: `Your verification code is ${code}`
+    })
+    return true
+  } catch (e) {
+    return false
+  }
 }

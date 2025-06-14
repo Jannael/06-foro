@@ -13,7 +13,7 @@ import connectDB from '../database/connect'
 
 dotenv.config()
 
-const connection = connectDB()
+export const connection = connectDB()
 
 export const UserController = {
   create: async function (req: Request, res: Response) {

@@ -52,4 +52,13 @@ describe('UserController Routes Functions', () => {
     expect(response.text).toBe('email verified')
     expect(response.status).toBe(200)
   })
+
+  test('register', async () => {
+    const response = await agent.put('/api/user/register')
+      .send({ name: 'jannael', email: 'example@gmail.com', password: '123456' })
+
+    expect(response.headers['set-cookie'][1]).toContain('accessToken')
+    expect(response.headers['set-cookie'][2]).toContain('refreshToken')
+    expect(response.status).toBe(201)
+  })
 })

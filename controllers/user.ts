@@ -33,7 +33,7 @@ export const UserController = {
 
       res.cookie('accessToken', accessToken, { httpOnly: true })
       res.cookie('refreshToken', refreshToken, { httpOnly: true })
-      res.status(201)
+      res.sendStatus(201)
     } catch (e) {
       if (e instanceof DuplicateEntryError) {
         res.status(400).json({ message: 'Duplicate User' })

@@ -62,6 +62,12 @@ describe('UserController Routes Functions', () => {
     expect(response.status).toBe(201)
   })
 
+  test('refreshTokem', async () => {
+    const response = await agent.get('/api/user/refreshToken')
+    expect(response.status).toBe(200)
+    expect(response.text).toBe('Token refreshed')
+  })
+
   test('delete', async () => {
     const response = await agent.delete('/api/user/delete')
     expect(response.status).toBe(204)

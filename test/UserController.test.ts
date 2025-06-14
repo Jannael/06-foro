@@ -1,7 +1,6 @@
-import { server } from '../app'
-// import request from 'supertest'
+import { app, server } from '../app'
+import request from 'supertest'
 import { connection } from '../controllers/user'
-import { sendEmail } from '../utils/utils'
 
 afterAll(async () => {
   server.close()
@@ -9,10 +8,33 @@ afterAll(async () => {
 })
 
 describe('UserController Routes Functions', () => {
-  test('sendEmail', async () => {
-    const email = 'floo234.clashroyale@gmail.com'
-    const code = 1234
-    const response = await sendEmail(email, code)
-    expect(response).toBe(true)
+  const agent = request.agent(app)
+
+  test('askForCode', async () => {
+    const cases = [
+      {
+        body: { name: 'John Doe', email: 'john@doe.com' },
+        expect: 400
+      },
+      {
+        body: { name: 'John Doe', email: '' },
+        expect: 400
+      },
+      {
+        body: { name: '', email: '', password: '' },
+        expect: 400
+      }
+    ]
+
+    for (const c of cases) {
+      const response = await request(app).post('/api/user/askForCode').send(c.body)
+      expect(response.status).toBe(c.expect)
+    }
+
+    const response = await agent.post('/api/user/askForCode').send(
+      { name: 'jannael', email: 'floo234.clashroyale@gmail.com', password: '123456' }
+    )
+
+    expect(response.headers['set-cookie']).toHaveLength(1)
   })
 })

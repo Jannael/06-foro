@@ -33,6 +33,11 @@ describe('User Model', () => {
     expect(response).toEqual({ name: 'John Doe', email: 'john@doe.com', password: '123456', id: expect.any(String) })
   })
 
+  test('Verify Email', async () => {
+    const response = await UserModel.verifyEmail('John Doe', 'john@doe.com', connection)
+    expect(response).toEqual({ email: 'john@doe.com', emailVerified: true })
+  })
+
   test('Update user', async () => {
     const response = await UserModel.update(userId, { name: 'John Doe2' }, connection)
     expect(response).toEqual({ id: userId })

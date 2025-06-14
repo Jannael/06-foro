@@ -1,6 +1,9 @@
 import { app, server } from '../app'
 import request from 'supertest'
 import { connection } from '../controllers/user'
+import dotenv from 'dotenv'
+
+dotenv.config()
 
 afterAll(async () => {
   server.close()
@@ -13,15 +16,19 @@ describe('UserController Routes Functions', () => {
   test('askForCode', async () => {
     const cases = [
       {
-        body: { name: 'John Doe', email: 'john@doe.com' },
+        body: { name: '', email: '' },
         expect: 400
       },
       {
-        body: { name: 'John Doe', email: '' },
+        body: { email: 'johnDoe' },
         expect: 400
       },
       {
-        body: { name: '', email: '', password: '' },
+        body: { email: 'example@gmail.com' },
+        expect: 200
+      },
+      {
+        body: {},
         expect: 400
       }
     ]
@@ -32,9 +39,17 @@ describe('UserController Routes Functions', () => {
     }
 
     const response = await agent.post('/api/user/askForCode').send(
-      { name: 'jannael', email: 'floo234.clashroyale@gmail.com', password: '123456' }
+      { name: 'jannael', email: 'example@gmail.com', password: '123456', testCode: process.env.SECRET_CODE_TEST as string }
     )
 
     expect(response.headers['set-cookie']).toHaveLength(1)
+  })
+
+  test('verifyCode', async () => {
+    const response = await agent.post('/api/user/verifyCode').send({ email: 'example@gmail.com', code: '1234' })
+
+    expect(response.headers['set-cookie'][1]).toContain('emailVerified')
+    expect(response.text).toBe('email verified')
+    expect(response.status).toBe(200)
   })
 })

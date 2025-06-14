@@ -1,14 +1,14 @@
 import { Router } from 'express'
 import { UserController } from '../controllers/user'
-import { UserValidationData } from '../middlewares/UserValidationData'
+import { UserValidationData, UserValidationEmail } from '../middlewares/UserValidationData'
 import { UserLogin } from '../middlewares/UserLogin'
 import { MFA, MFALogin } from '../middlewares/MFA'
 
 export const UserRouter = Router()
 
 // you ask for a code with you data and then you validate that code in the email that will add a cookie with the code
-UserRouter.post('/askForCode', UserValidationData, UserController.askForCode)
-UserRouter.post('/verifyCode', UserValidationData, UserController.verifyCode)
+UserRouter.post('/askForCode', UserValidationEmail, UserController.askForCode)
+UserRouter.post('/verifyCode', UserController.verifyCode)
 // the cookie with the code will be check and if its correct we will delete it and sned the credentrials as cookies
 UserRouter.put('/register', MFA, UserValidationData, UserController.create)
 // it tales tje credentials as cookies and sends a new ones

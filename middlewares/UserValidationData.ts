@@ -37,3 +37,23 @@ export async function UserValidationDataPartial (req: Request, res: Response, ne
     res.status(400).send(new UserBadRequestError('Invalid or missing data'))
   }
 }
+
+export async function UserValidationEmail (req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const emailSchema = zod.object({
+      email: zod.string().email(),
+      testCode: zod.string().min(6).max(255).optional()
+    })
+
+    const data = await emailSchema.parseAsync(req.body)
+
+    if (data.testCode !== undefined && data.testCode !== process.env.SECRET_CODE_TEST) {
+      res.status(400).send('get out of here')
+    }
+
+    req.body = data
+    next()
+  } catch (e) {
+    res.status(400).send(new UserBadRequestError('Invalid or missing data'))
+  }
+}

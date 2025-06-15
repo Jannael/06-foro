@@ -36,4 +36,12 @@ describe('threadMsgController', () => {
     expect(response.status).toBe(200)
     expect(response.body).toEqual(expect.any(Array))
   })
+
+  test('createMsg', async () => {
+    const response = await agent.post('/api/threadMsg/createMsg')
+      .send({ threadId, msg: 'test' })
+
+    expect(response.status).toBe(201)
+    expect(response.body).toEqual({ ID_MSG: expect.any(String) })
+  })
 })

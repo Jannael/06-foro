@@ -9,11 +9,9 @@ import {
   DuplicateEntryError
 } from '../errors/errors'
 import { sendEmail, generateCode } from '../utils/utils'
-import connectDB from '../database/connect'
+import { connection } from '../database/connect'
 
 dotenv.config()
-
-export const connection = connectDB()
 
 export const UserController = {
   create: async function (req: Request, res: Response) {

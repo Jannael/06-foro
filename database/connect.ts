@@ -14,3 +14,5 @@ export default async function createConnection (): Promise<mysql.Connection> {
 
   return connection
 }
+
+export const connection = createConnection()

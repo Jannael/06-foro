@@ -1,8 +1,11 @@
 import { Request, Response } from 'express'
+import { ThreadModel } from '../models/thread'
+import { connection } from '../database/connect'
 
 export const ThreadController = {
-  getAll: function (req: Request, res: Response) {
-    res.send('getAll')
+  getAll: async function (req: Request, res: Response) {
+    const response = await ThreadModel.getMsgById(req.params.id, await connection)
+    res.send(response)
   },
 
   getMsgById: function (req: Request, res: Response) {

@@ -1,6 +1,6 @@
 import { app, server } from '../../app'
 import request from 'supertest'
-import { connection } from '../../controllers/user'
+import { connection } from '../../database/connect'
 import dotenv from 'dotenv'
 
 dotenv.config()

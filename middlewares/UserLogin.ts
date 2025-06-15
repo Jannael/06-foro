@@ -16,6 +16,7 @@ export async function UserLogin (req: Request, res: Response, next: NextFunction
     (req as CustomRequest).UserId = id
     next()
   } catch (e) {
+    console.log(e)
     res.status(401).send('Unauthorized')
   }
 }

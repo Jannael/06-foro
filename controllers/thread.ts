@@ -16,7 +16,7 @@ export const ThreadController = {
 
     try {
       const response = await ThreadModel.create(id, name, description, await connection)
-      res.send(response)
+      res.status(201).send(response)
     } catch (e) {
       if (e instanceof UserBadRequestError) {
         res.status(400).json({ message: 'Invalid or missing data' })

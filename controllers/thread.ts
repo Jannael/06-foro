@@ -39,7 +39,20 @@ export const ThreadController = {
     }
   },
 
-  delete: function (req: Request, res: Response) {
-    res.send('delete')
+  delete: async function (req: Request, res: Response) {
+    const id = (req as CustomRequest).UserId
+    const { threadId } = req.body
+
+    if (threadId === undefined || threadId === '' || id === undefined || id === '') {
+      res.status(400).send('Invalid or missing data')
+      return
+    }
+
+    try {
+      await ThreadModel.delete(id, threadId, await connection)
+      res.json({ message: 'Thread deleted' })
+    } catch (e) {
+      res.status(500).json({ message: 'Error deleting thread' })
+    }
   }
 }

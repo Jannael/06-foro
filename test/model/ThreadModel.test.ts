@@ -6,7 +6,6 @@ import { ThreadMsgModel } from '../../models/threadMsg'
 
 const returnSchemaCreateThread = zod.object({
   threadId: zod.string().uuid(),
-  userId: zod.string(),
   name: zod.string(),
   description: zod.string()
 })
@@ -14,9 +13,6 @@ const returnSchemaCreateThread = zod.object({
 describe('Thread and ThreadMsg Model', () => {
   let userId: string
   let ThreadId: string
-
-  beforeAll(async () => {
-  })
 
   afterAll(async () => {
     await (await connection).end()

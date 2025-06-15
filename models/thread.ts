@@ -29,7 +29,7 @@ export const ThreadModel = {
       )
 
       await connection.commit()
-      return { threadId: (threadId as any)[0][0].ID, userId, name, description }
+      return { threadId: (threadId as any)[0][0].ID, name, description }
     } catch (error) {
       await connection.rollback()
       throw new DatabaseError('Error creating thread')

@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
 import { connection } from '../database/connect'
 import { ThreadMsgModel } from '../models/threadMsg'
+import { CustomRequest } from '../interfaces/interfaces'
 
 export const ThreadMsgController = {
   getAll: async function (req: Request, res: Response) {
@@ -9,7 +10,22 @@ export const ThreadMsgController = {
     res.send(response)
   },
 
-  createMsg: async function (req: Request, res: Response) {},
+  createMsg: async function (req: Request, res: Response) {
+    const { threadId, msg } = req.body
+    const id = (req as CustomRequest).UserId
+
+    if (threadId === undefined || threadId === '' || msg === undefined || msg === '') {
+      res.status(400).send('Invalid or missing data')
+      return
+    }
+
+    try {
+      const response = await ThreadMsgModel.createMsg(id, threadId, msg, await connection)
+      res.send(response)
+    } catch (e) {
+      res.status(500).json({ message: 'Error creating thread' })
+    }
+  },
   updateMsg: async function (req: Request, res: Response) {},
   deleteMsg: async function (req: Request, res: Response) {}
 }

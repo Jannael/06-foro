@@ -31,12 +31,28 @@ describe('ThreadController', () => {
     expect(response.status).toBe(200)
     expect(response.body).toEqual(expect.any(Array))
   })
-
+  let threadId: string
   test('createThread', async () => {
     const response = await agent.post('/api/thread')
       .send({ name: 'jannael', description: 'test' })
 
     expect(response.status).toBe(201)
+    threadId = response.body.threadId
     expect(response.body).toEqual({ threadId: expect.any(String), name: 'jannael', description: 'test' })
+  })
+
+  test('update', async () => {
+    const response = await agent.patch('/api/thread/')
+      .send({ threadId, name: 'jannael', description: 'test2' })
+
+    expect(response.status).toBe(200)
+    expect(response.body).toEqual({ message: 'Thread updated' })
+  })
+
+  test('delete', async () => {
+    const response = await agent.delete('/api/thread/')
+      .send({ threadId })
+
+    expect(response.status).toBe(204)
   })
 })

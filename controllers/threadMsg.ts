@@ -22,7 +22,7 @@ export const ThreadMsgController = {
 
     try {
       const response = await ThreadMsgModel.createMsg(id, threadId, msg, await connection)
-      res.send(response)
+      res.status(201).send(response)
     } catch (e) {
       if (e instanceof UserBadRequestError) {
         res.status(400).json({ message: 'Invalid or missing data' })
@@ -62,7 +62,7 @@ export const ThreadMsgController = {
 
     try {
       await ThreadMsgModel.deleteMsg(id, threadId, msgId, await connection)
-      res.json({ message: 'Thread deleted' })
+      res.sendStatus(204)
     } catch (e) {
       if (e instanceof UserBadRequestError) {
         res.status(400).json({ message: 'Invalid or missing data' })

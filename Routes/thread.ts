@@ -6,5 +6,5 @@ export const ThreadRouter = Router()
 
 ThreadRouter.get('/', ThreadController.getAll)
 ThreadRouter.post('/', UserLogin, ThreadController.createThread)
-ThreadRouter.patch('/:id', UserLogin, ThreadController.update)
-ThreadRouter.delete('/:id', UserLogin, ThreadController.delete)
+ThreadRouter.patch('/', UserLogin, ThreadController.update)
+ThreadRouter.delete('/', UserLogin, ThreadController.delete)

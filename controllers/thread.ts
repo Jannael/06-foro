@@ -57,7 +57,7 @@ export const ThreadController = {
 
     try {
       await ThreadModel.delete(id, threadId, await connection)
-      res.json({ message: 'Thread deleted' })
+      res.sendStatus(204)
     } catch (e) {
       if (e instanceof UserBadRequestError) {
         res.status(400).json({ message: 'Invalid or missing data' })

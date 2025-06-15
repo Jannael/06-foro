@@ -13,4 +13,8 @@ app.use('/api/user', UserRouter)
 app.use('/api/thread', ThreadRouter)
 app.use('/api/threadMsg', ThreadMsgRouter)
 
+app.all(/ */g, (req, res) => {
+  res.status(404).send('Not found')
+})
+
 export const server = app.listen(3000, () => {})

@@ -21,8 +21,22 @@ export const ThreadController = {
     }
   },
 
-  update: function (req: Request, res: Response) {
-    res.send('update')
+  update: async function (req: Request, res: Response) {
+    const id = (req as CustomRequest).UserId
+    const { threadId, name, description } = req.body
+
+    if (threadId === undefined || threadId === '') {
+      res.status(400).send('Invalid or missing data')
+      return
+    }
+
+    try {
+      const data = { name, description }
+      await ThreadModel.update(id, threadId, data, await connection)
+      res.json({ message: 'Thread updated' })
+    } catch (e) {
+      res.status(500).json({ message: 'Error updating thread' })
+    }
   },
 
   delete: function (req: Request, res: Response) {

@@ -54,4 +54,11 @@ describe('threadMsgController', () => {
     expect(response.status).toBe(200)
     expect(response.body).toEqual({ message: 'Msg updated' })
   })
+
+  test('deleteMsg', async () => {
+    const response = await agent.delete('/api/threadMsg/deleteMsg')
+      .send({ threadId, msgId })
+
+    expect(response.status).toBe(204)
+  })
 })

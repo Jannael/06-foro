@@ -3,7 +3,6 @@ import { ThreadController } from '../controllers/thread'
 
 export const ThreadRouter = Router()
 
-ThreadRouter.get('/', ThreadController.getAll)
 ThreadRouter.get('/:id', ThreadController.getMsgById)
 
 ThreadRouter.post('/', ThreadController.createThread)

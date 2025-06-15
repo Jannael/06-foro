@@ -6,7 +6,8 @@ import dotenv from 'dotenv'
 import {
   DatabaseError,
   MissingDataError,
-  DuplicateEntryError
+  DuplicateEntryError,
+  UserBadRequestError
 } from '../errors/errors'
 import { sendEmail, generateCode } from '../utils/utils'
 import { connection } from '../database/connect'
@@ -36,8 +37,8 @@ export const UserController = {
         res.status(400).json({ message: 'Duplicate User' })
       } else if (e instanceof DatabaseError) {
         res.status(500).json({ message: 'Server is not responding' })
-      } else {
-        res.status(500).json({ message: 'Error creating user' })
+      } else if (e instanceof MissingDataError) {
+        res.status(500).json({ message: 'missing data' })
       }
     }
   },
@@ -72,6 +73,9 @@ export const UserController = {
       await UserModel.delete((req as CustomRequest).UserId, await connection)
       res.sendStatus(204)
     } catch (e) {
+      if (e instanceof MissingDataError) {
+        res.status(400).json({ message: 'Invalid or missing data' })
+      }
       res.status(500).json({ message: 'Error deleting user' })
     }
   },
@@ -99,6 +103,11 @@ export const UserController = {
       res.cookie('codeToVerifyEmailLogin', encryptedCode, { httpOnly: true })
       res.status(200).send('Email sent')
     } catch (e) {
+      if (e instanceof MissingDataError) {
+        res.status(400).json({ message: 'Invalid or missing data' })
+      } else if (e instanceof UserBadRequestError) {
+        res.status(400).json({ message: 'Invalid email' })
+      }
       res.status(500).json({ message: 'Error logging in user please try again' })
     }
   },
@@ -127,6 +136,11 @@ export const UserController = {
       res.cookie('refreshToken', refreshToken, { httpOnly: true })
       res.status(200).send('Logged in')
     } catch (e) {
+      if (e instanceof MissingDataError) {
+        res.status(400).json({ message: 'Invalid or missing data' })
+      } else if (e instanceof UserBadRequestError) {
+        res.status(400).json({ message: 'Invalid password' })
+      }
       res.status(500).json({ message: 'Error logging in user please try again' })
     }
   },

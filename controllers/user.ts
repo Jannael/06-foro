@@ -80,7 +80,7 @@ export const UserController = {
   },
 
   verifyLogin: async function (req: Request, res: Response) {
-    const { name, password, email } = req.body
+    const { name, password, email, testCode } = req.body
 
     if (name === '' || password === '' || email === '') {
       res.status(400).send('Invalid or missing data')
@@ -95,7 +95,7 @@ export const UserController = {
         return
       }
 
-      const code = generateCode()
+      const code = testCode !== undefined && testCode === process.env.SECRET_CODE_TEST ? 1234 : generateCode()
       const encryptedCode = jsonwebtoken.sign({ code }, process.env.JWT_SECRET as string, { expiresIn: '5m' })
 
       await sendEmail(email, code)

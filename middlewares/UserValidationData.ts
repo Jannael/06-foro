@@ -7,12 +7,18 @@ import {
 const UserDataSchema = zod.object({
   name: zod.string().min(3).max(255),
   email: zod.string().email(),
-  password: zod.string().min(6).max(255)
+  password: zod.string().min(6).max(255),
+  testCode: zod.string().min(6).max(255).optional()
 })
 
 export async function UserValidationData (req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
     const data = await UserDataSchema.parseAsync(req.body)
+
+    if (data.testCode !== undefined && data.testCode !== process.env.SECRET_CODE_TEST) {
+      res.status(400).send('get out of here')
+    }
+
     req.body = data
     next()
   } catch (e) {

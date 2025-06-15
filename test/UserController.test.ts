@@ -68,6 +68,14 @@ describe('UserController Routes Functions', () => {
     expect(response.text).toBe('Token refreshed')
   })
 
+  test('loginValidation', async () => {
+    const response = await agent.post('/api/user/loginValidation')
+      .send({ name: 'jannael', email: 'example@gmail.com', password: '123456' })
+
+    expect(response.status).toBe(200)
+    expect(response.text).toBe('Email sent')
+  })
+
   test('delete', async () => {
     const response = await agent.delete('/api/user/delete')
     expect(response.status).toBe(204)

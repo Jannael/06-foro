@@ -38,10 +38,26 @@ export const ThreadMsgController = {
 
     try {
       await ThreadMsgModel.updateMsg(id, threadId, msgId, msg, await connection)
-      res.json({ message: 'Thread updated' })
+      res.json({ message: 'Msg updated' })
     } catch (e) {
       res.status(500).json({ message: 'Error updating thread' })
     }
   },
-  deleteMsg: async function (req: Request, res: Response) {}
+
+  deleteMsg: async function (req: Request, res: Response) {
+    const { threadId, msgId } = req.body
+    const id = (req as CustomRequest).UserId
+
+    if (threadId === undefined || threadId === '' || msgId === undefined || msgId === '') {
+      res.status(400).send('Invalid or missing data')
+      return
+    }
+
+    try {
+      await ThreadMsgModel.deleteMsg(id, threadId, msgId, await connection)
+      res.json({ message: 'Thread deleted' })
+    } catch (e) {
+      res.status(500).json({ message: 'Error deleting thread' })
+    }
+  }
 }

@@ -2,6 +2,7 @@ import { Request, Response } from 'express'
 import { connection } from '../database/connect'
 import { ThreadMsgModel } from '../models/threadMsg'
 import { CustomRequest } from '../interfaces/interfaces'
+import { UserBadRequestError } from '../errors/errors'
 
 export const ThreadMsgController = {
   getAll: async function (req: Request, res: Response) {
@@ -23,6 +24,9 @@ export const ThreadMsgController = {
       const response = await ThreadMsgModel.createMsg(id, threadId, msg, await connection)
       res.send(response)
     } catch (e) {
+      if (e instanceof UserBadRequestError) {
+        res.status(400).json({ message: 'Invalid or missing data' })
+      }
       res.status(500).json({ message: 'Error creating thread' })
     }
   },
@@ -40,6 +44,9 @@ export const ThreadMsgController = {
       await ThreadMsgModel.updateMsg(id, threadId, msgId, msg, await connection)
       res.json({ message: 'Msg updated' })
     } catch (e) {
+      if (e instanceof UserBadRequestError) {
+        res.status(400).json({ message: 'Invalid or missing data' })
+      }
       res.status(500).json({ message: 'Error updating thread' })
     }
   },
@@ -57,6 +64,9 @@ export const ThreadMsgController = {
       await ThreadMsgModel.deleteMsg(id, threadId, msgId, await connection)
       res.json({ message: 'Thread deleted' })
     } catch (e) {
+      if (e instanceof UserBadRequestError) {
+        res.status(400).json({ message: 'Invalid or missing data' })
+      }
       res.status(500).json({ message: 'Error deleting thread' })
     }
   }

@@ -5,7 +5,7 @@ import {
 } from '../errors/errors'
 
 export const ThreadMsgModel = {
-  getMsgById: async function (id: string, connection: mysql.Connection) {
+  getAll: async function (id: string, connection: mysql.Connection) {
     try {
       const [rows] = await connection.query(
           `SELECT 

@@ -1,8 +1,7 @@
 import { Request, Response } from 'express'
 
 export const ThreadController = {
-  getMsgById: function (req: Request, res: Response) {
-    res.send('getById')
+  getAll: function (req: Request, res: Response) {
   },
 
   createThread: function (req: Request, res: Response) {

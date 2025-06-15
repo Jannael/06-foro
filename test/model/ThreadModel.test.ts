@@ -48,7 +48,7 @@ describe('Thread and ThreadMsg Model', () => {
 
     describe('ThreadMsgModel functions', () => {
       test('getAll thread msg', async () => {
-        const response = await ThreadMsgModel.getMsgById(ThreadId, await connection)
+        const response = await ThreadMsgModel.getAll(ThreadId, await connection)
         expect(response).toEqual(expect.any(Array))
       })
 

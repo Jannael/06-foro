@@ -1,7 +1,7 @@
-import { ThreadModel } from '../models/thread'
-import conectDB from '../database/connect'
+import { ThreadModel } from '../../models/thread'
+import conectDB from '../../database/connect'
 import mysql from 'mysql2/promise'
-import { UserModel } from '../models/user'
+import { UserModel } from '../../models/user'
 import zod from 'zod'
 
 const returnSchemaCreateThread = zod.object({

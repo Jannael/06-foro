@@ -1,11 +1,11 @@
-import { UserModel } from '../models/user'
+import { UserModel } from '../../models/user'
 import mysql from 'mysql2/promise'
 import dotenv from 'dotenv'
 import {
   UserBadRequestError,
   MissingDataError,
   DuplicateEntryError
-} from '../errors/errors'
+} from '../../errors/errors'
 dotenv.config()
 
 describe('User Model', () => {

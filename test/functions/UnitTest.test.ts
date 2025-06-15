@@ -1,4 +1,4 @@
-import { sendEmail } from '../utils/utils'
+import { sendEmail } from '../../utils/utils'
 
 describe('Unit Test', () => {
   test('sendEmail', async () => {

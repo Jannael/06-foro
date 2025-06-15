@@ -26,6 +26,22 @@ export const ThreadMsgController = {
       res.status(500).json({ message: 'Error creating thread' })
     }
   },
-  updateMsg: async function (req: Request, res: Response) {},
+
+  updateMsg: async function (req: Request, res: Response) {
+    const { threadId, msgId, msg } = req.body
+    const id = (req as CustomRequest).UserId
+
+    if (threadId === undefined || threadId === '' || msgId === undefined || msgId === '' || msg === undefined || msg === '') {
+      res.status(400).send('Invalid or missing data')
+      return
+    }
+
+    try {
+      await ThreadMsgModel.updateMsg(id, threadId, msgId, msg, await connection)
+      res.json({ message: 'Thread updated' })
+    } catch (e) {
+      res.status(500).json({ message: 'Error updating thread' })
+    }
+  },
   deleteMsg: async function (req: Request, res: Response) {}
 }

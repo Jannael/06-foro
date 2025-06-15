@@ -28,7 +28,7 @@ export function MFALogin (req: Request, res: Response, next: NextFunction): void
   const code = req.body.code
   const secureCode = jsonwebtoken.verify(isVerifiedEmail, process.env.JWT_SECRET as string) as { code: number }
 
-  if (secureCode.code !== code) {
+  if (secureCode.code !== Number(code)) {
     res.status(401).send('Unauthorized, please verify your email')
     return
   }

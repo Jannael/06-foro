@@ -30,7 +30,6 @@ export const UserController = {
 
       const accessToken = jsonwebtoken.sign({ id }, process.env.JWT_SECRET as string, { expiresIn: '1h' })
       const refreshToken = jsonwebtoken.sign({ id }, process.env.JWT_SECRET as string, { expiresIn: '7d' })
-
       res.cookie('accessToken', accessToken, { httpOnly: true })
       res.cookie('refreshToken', refreshToken, { httpOnly: true })
       res.sendStatus(201)
@@ -121,7 +120,7 @@ export const UserController = {
         return
       }
 
-      const id = await UserModel.login(name, password, await connection)
+      const id = (await UserModel.login(name, password, await connection)).id
 
       const accessToken = jsonwebtoken.sign({ id }, process.env.JWT_SECRET as string, { expiresIn: '1h' })
       const refreshToken = jsonwebtoken.sign({ id }, process.env.JWT_SECRET as string, { expiresIn: '7d' })

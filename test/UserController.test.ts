@@ -70,10 +70,18 @@ describe('UserController Routes Functions', () => {
 
   test('loginValidation', async () => {
     const response = await agent.post('/api/user/loginValidation')
-      .send({ name: 'jannael', email: 'example@gmail.com', password: '123456' })
+      .send({ name: 'jannael', email: 'example@gmail.com', password: '123456', testCode: process.env.SECRET_CODE_TEST as string })
 
     expect(response.status).toBe(200)
     expect(response.text).toBe('Email sent')
+  })
+
+  test('login', async () => {
+    const response = await agent.post('/api/user/login')
+      .send({ name: 'jannael', email: 'example@gmail.com', password: '123456', code: 1234 })
+
+    expect(response.status).toBe(200)
+    expect(response.text).toBe('Logged in')
   })
 
   test('delete', async () => {

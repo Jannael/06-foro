@@ -37,11 +37,21 @@ describe('threadMsgController', () => {
     expect(response.body).toEqual(expect.any(Array))
   })
 
+  let msgId: string
   test('createMsg', async () => {
     const response = await agent.post('/api/threadMsg/createMsg')
       .send({ threadId, msg: 'test' })
 
+    msgId = response.body.ID_MSG
     expect(response.status).toBe(201)
     expect(response.body).toEqual({ ID_MSG: expect.any(String) })
+  })
+
+  test('updateMsg', async () => {
+    const response = await agent.patch('/api/threadMsg/updateMsg')
+      .send({ threadId, msgId, msg: 'test2' })
+
+    expect(response.status).toBe(200)
+    expect(response.body).toEqual({ message: 'Msg updated' })
   })
 })

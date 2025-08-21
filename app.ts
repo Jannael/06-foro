@@ -4,17 +4,34 @@ import { ThreadRouter } from './Routes/thread'
 import { ThreadMsgRouter } from './Routes/threadMsg'
 import cookieParser from 'cookie-parser'
 
-export const app = express()
+import { ApolloServer } from '@apollo/server'
+import { expressMiddleware } from '@as-integrations/express5'
+import typeDefs from './graphQL/schemas/merge'
+import resolvers from './graphQL/resolvers/merge'
 
-app.use(express.json())
-app.use(cookieParser())
+export async function createApp (): Promise<express.Express> {
+  const app = express()
+  app.use(express.json())
+  app.use(cookieParser())
 
-app.use('/api/user', UserRouter)
-app.use('/api/thread', ThreadRouter)
-app.use('/api/threadMsg', ThreadMsgRouter)
+  app.use('/api/user', UserRouter)
+  app.use('/api/thread', ThreadRouter)
+  app.use('/api/threadMsg', ThreadMsgRouter)
 
-app.all(/ */g, (req, res) => {
-  res.status(404).send('Not found')
-})
+  const server = new ApolloServer({ typeDefs, resolvers })
+  await server.start()
 
-export const server = app.listen(3000, () => {})
+  app.use('/graphql',
+    expressMiddleware(server, {
+      context: async ({ req, res }) => {
+        return { req, res }
+      }
+    })
+  )
+
+  app.all(/ */g, (req, res) => {
+    res.status(404).send('Not found')
+  })
+
+  return app
+}

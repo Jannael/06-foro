@@ -1,9 +1,15 @@
 import request from 'supertest'
-import { app, server } from '../../app'
+import { createApp } from '../../app'
 import { connection } from '../../database/connect'
+import { Express } from 'express'
+
+let app: Express
+
+beforeAll(async () => {
+  app = await createApp()
+})
 
 afterAll(async () => {
-  await server.close()
   await (await connection).end()
 })
 

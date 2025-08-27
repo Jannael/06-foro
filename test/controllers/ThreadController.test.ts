@@ -1,14 +1,20 @@
-import { app, server } from '../../app'
+import { createApp } from '../../app'
 import { connection } from '../../database/connect'
 import request from 'supertest'
+import { Express } from 'express'
+
+let app: Express
+beforeAll(async () => {
+  app = await createApp()
+})
 
 afterAll(async () => {
-  await server.close()
   await (await connection).end()
 })
 
 describe('ThreadController', () => {
   const agent = request.agent(app)
+
   beforeAll(async () => {
     // first lest ask for a code
     await agent.post('/api/user/askForCode')

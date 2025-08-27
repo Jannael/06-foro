@@ -1,12 +1,17 @@
-import { app, server } from '../../app'
+import { createApp } from '../../app'
 import request from 'supertest'
 import { connection } from '../../database/connect'
 import dotenv from 'dotenv'
+import { Express } from 'express'
+
+let app: Express
+beforeAll(async () => {
+  app = await createApp()
+})
 
 dotenv.config()
 
 afterAll(async () => {
-  server.close()
   await (await connection).end()
 })
 
